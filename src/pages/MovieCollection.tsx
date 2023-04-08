@@ -1,23 +1,19 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import data from '../MovieData.json';
 import styles from '../Something.module.css';
-
-const mds = data.MovieDataList;
+import { Movie } from '../movie/movie';
 
 function MovieCollection() {
-  const [listOMovies, setListOMovies] = useState(mds);
-  const addMovie = () => {
-    setListOMovies([
-      ...mds,
-      {
-        Category: 'Action/Adventure',
-        Title: 'Batman Begins',
-        Year: 2005,
-        Director: 'Christopher Nolan',
-        Rating: 'PG-13',
-      },
-    ]);
-  };
+  const [listOfMovies, setListOfMovies] = useState<Movie[]>([]);
+
+  useEffect(() => {
+    const fetchMovies = async () => {
+      const rsp = await fetch('https://localhost:4000/movie');
+      const temp = await rsp.json();
+      setListOfMovies(temp);
+    };
+    fetchMovies();
+  }, []);
 
   return (
     <>
@@ -35,24 +31,28 @@ function MovieCollection() {
           <div className="col-10 align-self-center">
             <table className="table table-striped table-dark">
               <thead>
-                <tr>
+                <tr className="text-nowrap">
                   <th>Title</th>
                   <th>Year</th>
                   <th>Director</th>
                   <th>Rating</th>
                   <th>Category</th>
                   <th>Edited</th>
+                  <th>Lent To</th>
+                  <th>Notes</th>
                 </tr>
               </thead>
               <tbody className="">
-                {listOMovies.map((m) => (
-                  <tr>
-                    <td>{m.Title}</td>
-                    <td>{m.Year}</td>
-                    <td>{m.Director}</td>
-                    <td>{m.Rating}</td>
-                    <td>{m.Category}</td>
-                    <th>{m.Edited}</th>
+                {listOfMovies.map((m) => (
+                  <tr key={m.movieID}>
+                    <td>{m.title}</td>
+                    <td>{m.year}</td>
+                    <td>{m.director}</td>
+                    <td>{m.rating}</td>
+                    <td>{m.category}</td>
+                    <th>{m.edited}</th>
+                    <th>{m.lentTo}</th>
+                    <th>{m.notes}</th>
                   </tr>
                 ))}
               </tbody>
